@@ -47,12 +47,29 @@ function App() {
     }
   }
 
+  const onDelete = async(id)=>{
+    try {
+      if(!confirm("정말 삭제할까요?")) return
+
+      const {data}=await axios.delete(`${API}/${id}`)
+
+      if(Array.isArray(data?.todos)){
+        setTodos(data.todos)
+        return
+      }
+
+      const deletedId = data?.deletedId?? data?.todo?._id ?? data?._id??id
+      setTodos((prev)=> prev.filter((t)=>t._id!==deletedId))
+    } catch (error) {
+      console.error("삭제 실패",error)
+    }
+  }
 
   return (
     <div className='App'>
       <Header />
       <TodoEditor onCreate={onCreate}/>
-      <TodoList todos={todos} />
+      <TodoList todos={todos} onDelete={onDelete}/>
     </div>
   )
 }
